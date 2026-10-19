@@ -1,0 +1,41 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <AssemblyName>AnnoCfgComposer</AssemblyName>
+    <RootNamespace>AnnoCfgComposer</RootNamespace>
+    <Version>0.1.0</Version>
+    <Product>Anno Cfg Composer</Product>
+    <ApplicationIcon>app.ico</ApplicationIcon>   <!-- gen/make_icon.py : original Roman temple icon -->
+    <Company>freej85</Company>
+    <Description>Anno 117: browse .cfg graphics in the installed game, view them in 3D, extract them with their dependencies</Description>
+    <!-- Distribution: zip of the whole folder (not a single exe — user decision 2026-10-19). dotnet publish -c Release -o dist
+         .NET runtime included — recipients don't need to install it separately -->
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <SelfContained>true</SelfContained>
+    <!-- Ship only the UI languages the app supports (WPF/.NET satellite resources) -->
+    <SatelliteResourceLanguages>en;de;ko</SatelliteResourceLanguages>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- WPF projects leave System.IO out of the implicit usings -->
+    <Using Include="System.IO" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Window title bar / taskbar icon -->
+    <Resource Include="app.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- All textures are BC7 (DXGI 98) — for decoding -->
+    <PackageReference Include="BCnEncoder.Net" Version="2.1.0" />
+    <!-- 3D viewport, camera controls, grid. HelixToolkit.Wpf is .NET Framework only, so the Core version -->
+    <PackageReference Include="HelixToolkit.Wpf.SharpDX" Version="3.1.2" />
+  </ItemGroup>
+
+</Project>
