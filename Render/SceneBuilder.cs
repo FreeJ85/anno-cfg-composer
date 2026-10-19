@@ -181,8 +181,8 @@ public sealed class SceneBuilder(FileResolver files, SceneOptions options)
     void AddModel(CfgModel model, Matrix3D world, SceneNode scene)
     {
         ModelCount++;
-        var display = ToDisplay(world);
-        var m4 = ToMatrix4x4(display);
+        var display = Coords.Transform(world, options.Mirror);
+        var m4 = Coords.ToMatrix4x4(display);
 
         var rdmPath = files.Resolve(model.FileName);
         var entry = rdmPath == null ? null : LoadMesh(rdmPath);
@@ -209,7 +209,7 @@ public sealed class SceneBuilder(FileResolver files, SceneOptions options)
         // If the model can't be read, show the cfg's AABB as a semi-transparent orange box
         if (model.Bounds is { } box && !box.IsEmpty)
         {
-            var r = options.Mirror ? new Rect3D(-box.X - box.SizeX, box.Y, box.Z, box.SizeX, box.SizeY, box.SizeZ) : box;
+            var r = Coords.Box(box, options.Mirror);
             string key = r.ToString();
             if (!boxCache.TryGetValue(key, out var geo)) boxCache[key] = geo = Box(r);
             var mat = new DrawMaterial(null, Color.FromArgb(110, 255, 140, 0), false, Placeholder: true);
@@ -236,21 +236,6 @@ public sealed class SceneBuilder(FileResolver files, SceneOptions options)
         }
     }
 
-    /// <summary>Mirror F = diag(-1,1,1). Display matrix = F·M·F (mesh coordinates are flipped by F as well).</summary>
-    Matrix3D ToDisplay(Matrix3D m)
-    {
-        if (!options.Mirror) return m;
-        var f = new Matrix3D(-1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
-        return f * m * f;
-    }
-
-    // WPF Matrix3D and System.Numerics.Matrix4x4 both use row vectors (v·M) — copy the elements as is
-    static Matrix4x4 ToMatrix4x4(Matrix3D m) => new(
-        (float)m.M11, (float)m.M12, (float)m.M13, (float)m.M14,
-        (float)m.M21, (float)m.M22, (float)m.M23, (float)m.M24,
-        (float)m.M31, (float)m.M32, (float)m.M33, (float)m.M34,
-        (float)m.OffsetX, (float)m.OffsetY, (float)m.OffsetZ, (float)m.M44);
-
     MeshEntry LoadMesh(string path)
     {
         if (meshCache.TryGetValue(path, out var e)) return e;
@@ -269,10 +254,10 @@ public sealed class SceneBuilder(FileResolver files, SceneOptions options)
         return e;
     }
 
-    /// <summary>rdm → one DX mesh per submesh. When mirrored, X is flipped and the winding order reversed.</summary>
+    /// <summary>rdm → one DX mesh per submesh, mirrored as configured (see Coords).</summary>
     DxMesh[] ToGeometry(RdmMesh mesh)
     {
-        float sx = options.Mirror ? -1 : 1;
+        bool mirror = options.Mirror;
         var result = new DxMesh[mesh.Submeshes.Length];
         for (int s = 0; s < result.Length; s++)
         {
@@ -288,22 +273,15 @@ public sealed class SceneBuilder(FileResolver files, SceneOptions options)
                 if (remap.TryGetValue(v, out int n)) return n;
                 n = pos.Count;
                 remap[v] = n;
-                var p = mesh.Positions[v];
-                pos.Add(new Vector3(sx * (float)p.X, (float)p.Y, (float)p.Z));
-                if (nrm != null)
-                {
-                    var q = mesh.Normals![v];
-                    var nv = new Vector3(sx * (float)q.X, (float)q.Y, (float)q.Z);
-                    nrm.Add(nv.LengthSquared() > 1e-8f ? Vector3.Normalize(nv) : Vector3.UnitY);
-                }
+                pos.Add(Coords.Position(mesh.Positions[v], mirror));
+                nrm?.Add(Coords.Normal(mesh.Normals![v], mirror));
                 if (uv != null) uv.Add(new Vector2((float)mesh.Uvs![v].X, (float)mesh.Uvs[v].Y));
                 return n;
             }
             for (int i = sub.Start; i + 2 < sub.Start + sub.Count; i += 3)
             {
-                int a = Map(mesh.Indices[i]), b = Map(mesh.Indices[i + 1]), c = Map(mesh.Indices[i + 2]);
-                idx.Add(a);
-                if (options.Mirror) { idx.Add(c); idx.Add(b); } else { idx.Add(b); idx.Add(c); }
+                var (a, b, c) = Coords.Triangle(Map(mesh.Indices[i]), Map(mesh.Indices[i + 1]), Map(mesh.Indices[i + 2]), mirror);
+                idx.Add(a); idx.Add(b); idx.Add(c);
             }
             var g = new DxMesh { Positions = pos, Indices = idx };
             if (nrm != null) g.Normals = nrm;

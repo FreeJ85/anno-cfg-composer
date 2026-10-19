@@ -84,7 +84,7 @@ public sealed class GltfExporter
         int index = nodes.Count;
         nodes.Add(node);
 
-        var m = mirror ? Mirror(n.Local) : n.Local;
+        var m = Coords.Transform(n.Local, mirror);
         if (!m.IsIdentity)
         {
             // WPF uses row vectors (v·M), glTF uses column vectors + column-major storage → writing the WPF matrix in row order matches directly
@@ -101,12 +101,6 @@ public sealed class GltfExporter
             node["children"] = children;
         }
         return index;
-    }
-
-    static Matrix3D Mirror(Matrix3D m)
-    {
-        var f = new Matrix3D(-1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
-        return f * m * f;
     }
 
     // ---------------------------------------------------------------- Meshes
@@ -144,18 +138,16 @@ public sealed class GltfExporter
     Geometry GetGeometry(string rdmPath, RdmMesh mesh)
     {
         if (geometryCache.TryGetValue(rdmPath, out var g)) return g;
-        float sx = mirror ? -1 : 1;
         int n = mesh.Positions.Length;
 
         var pos = new float[n * 3];
         float[] min = [float.MaxValue, float.MaxValue, float.MaxValue], max = [float.MinValue, float.MinValue, float.MinValue];
         for (int i = 0; i < n; i++)
         {
-            var p = mesh.Positions[i];
-            float x = sx * (float)p.X, y = (float)p.Y, z = (float)p.Z;
-            pos[i * 3] = x; pos[i * 3 + 1] = y; pos[i * 3 + 2] = z;
-            min[0] = Math.Min(min[0], x); min[1] = Math.Min(min[1], y); min[2] = Math.Min(min[2], z);
-            max[0] = Math.Max(max[0], x); max[1] = Math.Max(max[1], y); max[2] = Math.Max(max[2], z);
+            var p = Coords.Position(mesh.Positions[i], mirror);
+            pos[i * 3] = p.X; pos[i * 3 + 1] = p.Y; pos[i * 3 + 2] = p.Z;
+            min[0] = Math.Min(min[0], p.X); min[1] = Math.Min(min[1], p.Y); min[2] = Math.Min(min[2], p.Z);
+            max[0] = Math.Max(max[0], p.X); max[1] = Math.Max(max[1], p.Y); max[2] = Math.Max(max[2], p.Z);
         }
         int posAcc = AddAccessor(AddView(Bytes(pos), ArrayBuffer), Float, n, "VEC3", min, max);
 
@@ -165,12 +157,8 @@ public sealed class GltfExporter
             var nrm = new float[n * 3];
             for (int i = 0; i < n; i++)
             {
-                var v = mesh.Normals[i];
-                v.X *= sx;
-                double len = v.Length;
-                // glTF only allows unit-length normals
-                if (len < 1e-6 || double.IsNaN(len)) v = new Vector3D(0, 1, 0); else v /= len;
-                nrm[i * 3] = (float)v.X; nrm[i * 3 + 1] = (float)v.Y; nrm[i * 3 + 2] = (float)v.Z;
+                var v = Coords.Normal(mesh.Normals[i], mirror);
+                nrm[i * 3] = v.X; nrm[i * 3 + 1] = v.Y; nrm[i * 3 + 2] = v.Z;
             }
             nrmAcc = AddAccessor(AddView(Bytes(nrm), ArrayBuffer), Float, n, "VEC3");
         }
@@ -192,10 +180,8 @@ public sealed class GltfExporter
             var tri = new uint[count];
             for (int i = 0; i < count; i += 3)
             {
-                int a = mesh.Indices[sub.Start + i], b = mesh.Indices[sub.Start + i + 1], c = mesh.Indices[sub.Start + i + 2];
-                tri[i] = (uint)a;
-                tri[i + 1] = (uint)(mirror ? c : b);
-                tri[i + 2] = (uint)(mirror ? b : c);
+                var (a, b, c) = Coords.Triangle(mesh.Indices[sub.Start + i], mesh.Indices[sub.Start + i + 1], mesh.Indices[sub.Start + i + 2], mirror);
+                tri[i] = (uint)a; tri[i + 1] = (uint)b; tri[i + 2] = (uint)c;
             }
             idx[s] = AddAccessor(AddView(Bytes(tri), ElementArrayBuffer), UInt, count, "SCALAR");
         }
