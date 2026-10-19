@@ -639,11 +639,23 @@ public partial class MainWindow : Window
         return sb.Length == 0 ? Loc.S("issues.none") : sb.ToString();
     }
 
+    // ---------------------------------------------------------------- Copyright notice
+
+    /// <summary>Before the first extract / glTF export: the game's models and textures belong to Ubisoft — don't redistribute. Shown once.</summary>
+    void ShowCopyrightNoticeOnce()
+    {
+        if (settings.CopyrightNoticeShown) return;
+        MessageBox.Show(this, Loc.S("dlg.copyright"), Loc.S("dlg.copyrightTitle"), MessageBoxButton.OK, MessageBoxImage.Information);
+        settings.CopyrightNoticeShown = true;
+        settings.Save();
+    }
+
     // ---------------------------------------------------------------- glTF
 
     async void OnExportGltf(object sender, RoutedEventArgs e)
     {
         if (currentBuilder?.Scene is not { } scene || currentResolver == null || currentPath == null || busy) return;
+        ShowCopyrightNoticeOnce();
         var dlg = new SaveFileDialog
         {
             Filter = Loc.S("dlg.gltfFilter"),
@@ -689,6 +701,7 @@ public partial class MainWindow : Window
     async void OnExtract(object sender, RoutedEventArgs e)
     {
         if (currentPath == null || currentResolver == null || busy) return;
+        ShowCopyrightNoticeOnce();
         var dlg = new OpenFolderDialog { Title = Loc.S("dlg.extractTitle") };
         if (Directory.Exists(settings.ExtractDir)) dlg.InitialDirectory = settings.ExtractDir;
         if (dlg.ShowDialog(this) != true) return;

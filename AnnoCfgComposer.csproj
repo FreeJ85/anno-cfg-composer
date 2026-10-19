@@ -8,7 +8,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <AssemblyName>AnnoCfgComposer</AssemblyName>
     <RootNamespace>AnnoCfgComposer</RootNamespace>
-    <Version>0.1.0</Version>
+    <Version>0.1.1</Version>
     <Product>Anno Cfg Composer</Product>
     <ApplicationIcon>app.ico</ApplicationIcon>   <!-- gen/make_icon.py : original Roman temple icon -->
     <Company>freej85</Company>

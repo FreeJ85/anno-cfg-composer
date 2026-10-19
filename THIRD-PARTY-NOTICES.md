@@ -16,7 +16,7 @@ Anno Cfg Composer uses the following open-source components. Each is distributed
 
 The application icon is made from an Anno 117: Pax Romana user-interface icon (Roman temple). Anno is a trademark of Ubisoft Entertainment; the artwork belongs to Ubisoft. This project is fan-made and not affiliated with Ubisoft.
 
-The program reads game files from your own installation. It does not contain or distribute game assets. Please do not redistribute models or textures you extract or export with it.
+The program reads game files from your own installation. It does not contain or distribute game assets. The game's models and textures are copyrighted by Ubisoft: use files you extract or export only for your own modding and learning, and do not redistribute them.
 
 ## MIT License
 

@@ -16,6 +16,8 @@ public sealed class Settings
     public string? GpuAdapter { get; set; }
     /// <summary>Mod folders dropped onto the left list.</summary>
     public List<string> ModFolders { get; set; } = [];
+    /// <summary>The copyright notice before the first extract / glTF export has been shown.</summary>
+    public bool CopyrightNoticeShown { get; set; }
 
     static string FilePath => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "AnnoCfgComposer", "settings.json");
 

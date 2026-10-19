@@ -74,6 +74,13 @@ Requirements: Windows 10 or 11 (64-bit), a DirectX 11 graphics card, Anno 117: P
 - **The program stops with an error** — details are saved in `%LOCALAPPDATA%\AnnoCfgComposer\logs` (*Help → Open error log folder*). Please attach that file when you report a problem.
 - **Settings** — `%APPDATA%\AnnoCfgComposer\settings.json`. Delete it to start fresh.
 
+### Copyright
+
+The models and textures of Anno 117: Pax Romana are copyrighted by Ubisoft. This program only reads them from your own installation and contains none of them.
+
+- Use the files you extract or export **only for your own modding and learning**. **Do not redistribute** them (no uploads of `.glb`, `.rdm` or `.dds` files from the game).
+- In mods, reference the original game paths (`data/base/…`) instead of copying game files into the mod.
+
 ### Building from source
 
 Requires the .NET 10 SDK.
@@ -136,6 +143,13 @@ Voraussetzungen: Windows 10 oder 11 (64 Bit), DirectX-11-Grafikkarte, installier
 - **Das Programm bricht mit einem Fehler ab** — Details stehen in `%LOCALAPPDATA%\AnnoCfgComposer\logs` (*Hilfe → Fehlerprotokoll-Ordner öffnen*). Bitte diese Datei beim Melden anhängen.
 - **Einstellungen** — `%APPDATA%\AnnoCfgComposer\settings.json`. Löschen setzt alles zurück.
 
+### Urheberrecht
+
+Die Modelle und Texturen von Anno 117: Pax Romana sind urheberrechtlich geschützt (Ubisoft). Das Programm liest sie nur aus deiner eigenen Installation und enthält keine davon.
+
+- Extrahierte oder exportierte Dateien **nur für eigenes Modding und zum Lernen** verwenden und **nicht weiterverbreiten** (keine Uploads von `.glb`-, `.rdm`- oder `.dds`-Dateien aus dem Spiel).
+- In Mods auf die Originalpfade des Spiels (`data/base/…`) verweisen, statt Spieldateien in die Mod zu kopieren.
+
 </details>
 
 ---
@@ -189,8 +203,15 @@ Voraussetzungen: Windows 10 oder 11 (64 Bit), DirectX-11-Grafikkarte, installier
 - **오류로 멈출 때** — `%LOCALAPPDATA%\AnnoCfgComposer\logs` 에 내용이 저장됩니다 (*도움말 → 오류 기록 폴더 열기*). 알려 주실 때 그 파일을 함께 보내 주세요.
 - **설정** — `%APPDATA%\AnnoCfgComposer\settings.json`. 지우면 처음 상태로 돌아갑니다.
 
+### 저작권
+
+Anno 117: Pax Romana 의 모델과 텍스처는 Ubisoft 의 저작물입니다. 이 프로그램은 사용자 PC 에 설치된 게임에서 읽기만 하며, 게임 파일을 하나도 담고 있지 않습니다.
+
+- 추출하거나 내보낸 파일은 **개인 모딩과 학습에만** 쓰고 **재배포하지 마세요** (게임에서 나온 `.glb`, `.rdm`, `.dds` 파일을 올리지 말 것).
+- 모드에서는 게임 파일을 복사해 넣지 말고 원본 경로(`data/base/…`)를 참조하세요.
+
 </details>
 
 ---
 
-<sub>MIT License · [Third-party notices](THIRD-PARTY-NOTICES.md) · Fan-made tool, not affiliated with Ubisoft. Anno is a trademark of Ubisoft Entertainment. The program reads files from your own installation and contains no game assets — please do not redistribute extracted or exported game models and textures.</sub>
+<sub>MIT License · [Third-party notices](THIRD-PARTY-NOTICES.md) · Fan-made tool, not affiliated with Ubisoft. Anno is a trademark of Ubisoft Entertainment. Game models and textures are copyrighted by Ubisoft — the program contains none of them; do not redistribute extracted or exported files.</sub>
